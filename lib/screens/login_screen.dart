@@ -6,28 +6,13 @@ import 'todo_screen.dart';
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
-    final AuthController authController = Get.find();
-
     // reactive fields instead of TextEditingController
     final RxString email = ''.obs;
     final RxString password = ''.obs;
     final RxString error = ''.obs;
-
-    void handleLogin() {
-      authController.login(email.value.trim(), password.value);
-
-      if (authController.user.value != null) {
-        // Navigator.pushReplacement(
-        //   context,
-        //   MaterialPageRoute(builder: (context) => const TodoScreen()),
-        // );
-        Get.off(TodoScreen());
-      } else {
-        error.value = "Wrong Password";
-      }
-    }
 
     return Scaffold(
       appBar: AppBar(title: const Text('Login')),
@@ -51,7 +36,8 @@ class LoginScreen extends StatelessWidget {
             const SizedBox(height: 20),
 
             ElevatedButton(
-              onPressed: () => handleLogin(),
+              onPressed: () =>
+                  handleLogin(error, email.value.trim(), password.value),
               child: const Text('Login'),
             ),
 
@@ -65,10 +51,11 @@ class LoginScreen extends StatelessWidget {
 
             TextButton(
               onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => SignupScreen()),
-                );
+                Get.to(SignupScreen());
+                // Navigator.push(
+                //   context,
+                //   MaterialPageRoute(builder: (_) => SignupScreen()),
+                // );
               },
               child: const Text("Don't have an account? Sign Up"),
             ),
@@ -76,5 +63,20 @@ class LoginScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  void handleLogin(Rx<String> error, String email, String password) {
+    final AuthController authController = Get.find();
+    bool success = authController.login(email, password);
+
+    if (success) {
+      // Navigator.pushReplacement(
+      //   context,
+      //   MaterialPageRoute(builder: (context) => const TodoScreen()),
+      // );
+      Get.off(TodoScreen());
+    } else {
+      error.value = "Wrong Password 123";
+    }
   }
 }

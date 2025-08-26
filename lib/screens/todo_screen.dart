@@ -21,34 +21,6 @@ class TodoScreen extends StatelessWidget {
 
     final TextEditingController textController = TextEditingController();
 
-    void addTodo() {
-      if (textController.text.trim().isEmpty) return;
-      todoController.addTodo(textController.text.trim());
-      textController.clear();
-    }
-
-    // void editTodo(Todo todo) async {
-    //   final updatedText = await Navigator.push<String>(
-    //     context,
-    //     MaterialPageRoute(
-    //       builder: (context) =>
-    //           EditTodoScreen(initialText: todo.description.value),
-    //     ),
-    //   );
-
-    //   if (updatedText != null && updatedText.isNotEmpty) {
-    //     todoController.editTodo(todo.id, updatedText);
-    //   }
-    // }
-    void editTodo(Todo todo) {
-      todoController.editedTodo.value = todo;
-      Get.to(EditTodoScreen());
-    }
-
-    void deleteTodo(Todo todo) {
-      todoController.deleteTodo(todo.id);
-    }
-
     void logoutUser() {
       authController.logout();
       Get.off(LoginScreen());
@@ -118,66 +90,92 @@ class TodoScreen extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: 10),
-                ElevatedButton(onPressed: addTodo, child: const Text("Add")),
+                ElevatedButton(
+                  onPressed: () {
+                    _addTodo(todoController, textController.text);
+                    textController.clear();
+                  },
+                  child: const Text("Add"),
+                ),
               ],
             ),
             const SizedBox(height: 20),
-            Expanded(
-              child: Obx(
-                () => ListView.builder(
-                  itemCount: todoController.todos.length,
-                  itemBuilder: (context, index) {
-                    final todo = todoController.todos[index];
-                    return Obx(
-                      () => ListTile(
-                        leading: Checkbox(
-                          value: todo.isCompleted.value,
-                          onChanged: (val) {
-                            todoController.toggleTodoStatus(index);
-                          },
-                        ),
-                        title: Text(
-                          todo.description.value,
-                          style: TextStyle(
-                            decoration: todo.isCompleted.value
-                                ? TextDecoration.lineThrough
-                                : null,
-                          ),
-                        ),
-                        trailing: SizedBox(
-                          width: 100,
-                          child: Row(
-                            children: [
-                              IconButton(
-                                onPressed: () => editTodo(todo),
-                                icon: const Icon(
-                                  Icons.edit,
-                                  color: Colors.blue,
-                                ),
-                              ),
-                              IconButton(
-                                onPressed: todo.isCompleted.value
-                                    ? () => deleteTodo(todo)
-                                    : null,
-                                icon: Icon(
-                                  Icons.delete,
-                                  color: todo.isCompleted.value
-                                      ? Colors.red
-                                      : Colors.grey,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              ),
-            ),
+            _todoList(todoController),
           ],
         ),
       ),
+    );
+  }
+
+  void _addTodo(TodoController todoController, String text) {
+    if (text.trim().isEmpty) return;
+    todoController.addTodo(text.trim());
+    // textController.clear();
+  }
+
+  void _editTodo(TodoController todoController, Todo todo) {
+    todoController.editedTodo.value = todo;
+    Get.to(EditTodoScreen());
+  }
+
+  void _deleteTodo(TodoController todoController, Todo todo) {
+    todoController.deleteTodo(todo.id);
+  }
+
+  Widget _todoList(TodoController todoController) {
+    return Expanded(
+      child: Obx(() {
+        int itemCount = todoController.todos.length;
+        if (itemCount == 0) {
+          return Text("No To-Dos found. Add a new one to continue.");
+        }
+        return ListView.builder(
+          itemCount: itemCount,
+          itemBuilder: (context, index) {
+            final todo = todoController.todos[index];
+            return Obx(
+              () => ListTile(
+                leading: Checkbox(
+                  value: todo.isCompleted.value,
+                  onChanged: (val) {
+                    todoController.toggleTodoStatus(index);
+                  },
+                ),
+                title: Text(
+                  todo.description.value,
+                  style: TextStyle(
+                    decoration: todo.isCompleted.value
+                        ? TextDecoration.lineThrough
+                        : null,
+                  ),
+                ),
+                trailing: SizedBox(
+                  width: 100,
+                  child: Row(
+                    children: [
+                      IconButton(
+                        onPressed: () => _editTodo(todoController, todo),
+                        icon: const Icon(Icons.edit, color: Colors.blue),
+                      ),
+                      IconButton(
+                        onPressed: todo.isCompleted.value
+                            ? () => _deleteTodo(todoController, todo)
+                            : null,
+                        icon: Icon(
+                          Icons.delete,
+                          color: todo.isCompleted.value
+                              ? Colors.red
+                              : Colors.grey,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            );
+          },
+        );
+      }),
     );
   }
 }

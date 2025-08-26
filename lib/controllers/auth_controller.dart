@@ -16,7 +16,7 @@ class AuthController extends GetxController {
   );
   final ProfileController profileController = Get.put(ProfileController());
   // Method to log in a user by checking email & password
-  void login(String email, String password) {
+  bool login(String email, String password) {
     if (savedUser != null &&
         savedUser!.email == email.trim() &&
         savedUser!.password == password) {
@@ -27,9 +27,11 @@ class AuthController extends GetxController {
         age: savedUser!.age!.value,
         gender: savedUser!.gender!.value,
       );
+      return true;
     } else {
       // If not matched, no user is logged in
       user.value = null;
+      return false;
     }
   }
 
