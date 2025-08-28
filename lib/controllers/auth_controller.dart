@@ -36,7 +36,7 @@ class AuthController extends GetxController {
   }
 
   // Method to sign up a new user
-  void signup({
+  bool signup({
     required String name,
     required String email,
     required int age,
@@ -54,6 +54,7 @@ class AuthController extends GetxController {
     // Set current user as this new user
     user.value = savedUser;
     profileController.updateProfile(name: name, age: age, gender: gender);
+    return true;
   }
 
   // Method to log out user

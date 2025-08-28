@@ -4,12 +4,12 @@ import 'package:get/get.dart';
 import 'package:newtodoapp/controllers/profile_controller.dart';
 
 class EditProfileScreen extends StatelessWidget {
-  const EditProfileScreen({super.key});
+  EditProfileScreen({super.key});
+  final ProfileController profileController = Get.find();
+
   @override
   Widget build(BuildContext context) {
     // final AuthController authController = Get.put(AuthController());
-
-    final ProfileController profileController = Get.find();
     final TextEditingController nameController = TextEditingController(
       text: profileController.name.value,
     );
@@ -17,17 +17,7 @@ class EditProfileScreen extends StatelessWidget {
     final TextEditingController ageController = TextEditingController(
       text: profileController.age.value.toString(),
     );
-
     final RxString selectedGender = profileController.gender.value.obs;
-    void saveProfile() {
-      profileController.updateProfile(
-        name: nameController.text.trim(),
-        age: int.tryParse(ageController.text) ?? 0,
-        gender: selectedGender.value,
-      );
-      // Navigator.pop(context);
-      Get.back();
-    }
 
     return Scaffold(
       appBar: AppBar(title: const Text("Edit Profile")),
@@ -60,12 +50,29 @@ class EditProfileScreen extends StatelessWidget {
 
             const SizedBox(height: 20),
             ElevatedButton(
-              onPressed: saveProfile,
+              onPressed: () {
+                saveProfile(nameController, ageController, selectedGender);
+              },
               child: const Text("Save Profile"),
             ),
           ],
         ),
       ),
     );
+  }
+
+  void saveProfile(
+    TextEditingController nameController,
+
+    TextEditingController ageController,
+    Rx<String> selectedGender,
+  ) {
+    profileController.updateProfile(
+      name: nameController.text.trim(),
+      age: int.tryParse(ageController.text) ?? 0,
+      gender: selectedGender.value,
+    );
+    // Navigator.pop(context);
+    Get.back();
   }
 }

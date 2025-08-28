@@ -7,9 +7,6 @@ class SignupScreen extends StatelessWidget {
   const SignupScreen({super.key});
   @override
   Widget build(BuildContext context) {
-    // Access AuthController (to create new users).
-    final AuthController authController = Get.find();
-
     final RxString name = ''.obs;
     final RxString email = ''.obs;
     final RxString password = ''.obs;
@@ -17,33 +14,6 @@ class SignupScreen extends StatelessWidget {
     final RxString selectedGender = 'f'.obs;
     // Reactive error
     final RxString error = ''.obs;
-    // Function to handle signup process.
-    void handleSignup() {
-      // Check if any field is empty or invalid.
-      if (name.value.isEmpty ||
-          email.value.isEmpty ||
-          password.value.isEmpty ||
-          age.value == 0) {
-        error.value = "Please fill all details";
-        return; // Stop here if validation fails.
-      }
-
-      // Call signup function from AuthController to save user.
-      authController.signup(
-        name: name.value,
-        email: email.value,
-        age: age.value,
-        password: password.value,
-        gender: selectedGender.value,
-      );
-
-      // After successful signup, go back to LoginScreen.
-      // Navigator.pushReplacement(
-      //   context,
-      //   MaterialPageRoute(builder: (_) => LoginScreen()),
-      // );
-      Get.off(LoginScreen());
-    }
 
     return Scaffold(
       appBar: AppBar(title: const Text('Sign Up')),
@@ -90,7 +60,14 @@ class SignupScreen extends StatelessWidget {
             ),
             const SizedBox(height: 20),
             ElevatedButton(
-              onPressed: () => handleSignup(),
+              onPressed: () => handleSignup(
+                name.value,
+                email.value.trim(),
+                age.value,
+                password.value,
+                selectedGender.value,
+                error,
+              ),
               child: const Text('Sign Up'),
             ),
             const SizedBox(height: 10),
@@ -102,5 +79,39 @@ class SignupScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  void handleSignup(
+    String name,
+    String email,
+
+    int age,
+    String password,
+    String selectedGender,
+    Rx<String> error,
+  ) {
+    final AuthController authController = Get.find();
+
+    // Check if any field is empty or invalid.
+    if (name.isEmpty || email.isEmpty || password.isEmpty || age == 0) {
+      error.value = "Please fill all details";
+      return; // Stop here if validation fails.
+    }
+
+    // Call signup function from AuthController to save user.
+    authController.signup(
+      name: name,
+      email: email,
+      age: age,
+      password: password,
+      gender: selectedGender,
+    );
+
+    // After successful signup, go back to LoginScreen.
+    // Navigator.pushReplacement(
+    //   context,
+    //   MaterialPageRoute(builder: (_) => LoginScreen()),
+    // );
+    Get.off(LoginScreen());
   }
 }

@@ -11,42 +11,13 @@ import 'edit_profile_screen.dart';
 import 'change_password_screen.dart';
 
 class TodoScreen extends StatelessWidget {
-  const TodoScreen({super.key});
-
+  TodoScreen({super.key});
+  final AuthController authController = Get.find();
+  final TodoController todoController = Get.find();
+  final ProfileController profileController = Get.find();
   @override
   Widget build(BuildContext context) {
-    final AuthController authController = Get.find();
-    final TodoController todoController = Get.find();
-    final ProfileController profileController = Get.find();
-
     final TextEditingController textController = TextEditingController();
-
-    void logoutUser() {
-      authController.logout();
-      Get.off(LoginScreen());
-    }
-
-    // void openChangePasswordScreen() async {
-    //   final updatedPassword = await Navigator.push(
-    //     context,
-    //     MaterialPageRoute(builder: (context) => ChangePasswordScreen()),
-    //   );
-    //   if (updatedPassword != null) {
-    //     authController.updateUserPassword(updatedPassword);
-    //   }
-    // }
-
-    void openChangePasswordScreen() {
-      Get.to(() => const ChangePasswordScreen());
-    }
-
-    void openEditProfileScreen() {
-      // Navigator.push(
-      //   context,
-      //   MaterialPageRoute(builder: (context) => const EditProfileScreen()),
-      // );
-      Get.to(EditProfileScreen());
-    }
 
     return Scaffold(
       appBar: AppBar(
@@ -60,11 +31,15 @@ class TodoScreen extends StatelessWidget {
         actions: [
           PopupMenuButton<String>(
             onSelected: (value) {
-              if (value == "logout") logoutUser();
-              if (value == "change_password") openChangePasswordScreen();
-              if (value == "edit_profile") openEditProfileScreen();
+              if (value == "logout") {
+                logoutUser();
+              } else if (value == "change_password") {
+                openChangePasswordScreen();
+              } else if (value == "edit_profile") {
+                openEditProfileScreen();
+              }
             },
-            itemBuilder: (context) => const [
+            itemBuilder: (context) => [
               PopupMenuItem(value: 'edit_profile', child: Text('Edit Profile')),
               PopupMenuItem(
                 value: 'change_password',
@@ -105,21 +80,6 @@ class TodoScreen extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  void _addTodo(TodoController todoController, String text) {
-    if (text.trim().isEmpty) return;
-    todoController.addTodo(text.trim());
-    // textController.clear();
-  }
-
-  void _editTodo(TodoController todoController, Todo todo) {
-    todoController.editedTodo.value = todo;
-    Get.to(EditTodoScreen());
-  }
-
-  void _deleteTodo(TodoController todoController, Todo todo) {
-    todoController.deleteTodo(todo.id);
   }
 
   Widget _todoList(TodoController todoController) {
@@ -177,5 +137,48 @@ class TodoScreen extends StatelessWidget {
         );
       }),
     );
+  }
+
+  void _addTodo(TodoController todoController, String text) {
+    if (text.trim().isEmpty) return;
+    todoController.addTodo(text.trim());
+    // textController.clear();
+  }
+
+  void _editTodo(TodoController todoController, Todo todo) {
+    todoController.editedTodo.value = todo;
+    Get.to(EditTodoScreen());
+  }
+
+  void _deleteTodo(TodoController todoController, Todo todo) {
+    todoController.deleteTodo(todo.id);
+  }
+
+  void logoutUser() {
+    authController.logout();
+    Get.off(LoginScreen());
+  }
+
+  // void openChangePasswordScreen() async {
+  //   final updatedPassword = await Navigator.push(
+  //     context,
+  //     MaterialPageRoute(builder: (context) => ChangePasswordScreen()),
+  //   );
+  //   if (updatedPassword != null) {
+  //     authController.updateUserPassword(updatedPassword);
+  //   }
+  // }
+
+  void openChangePasswordScreen() {
+    Get.to(() => const ChangePasswordScreen());
+  }
+
+  void openEditProfileScreen() {
+    // Navigator.push(
+    //   context,
+    //   MaterialPageRoute(builder: (context) => const EditProfileScreen()),
+    // );
+    print("Opening EditProfileScreen...");
+    Get.to(() => EditProfileScreen());
   }
 }
