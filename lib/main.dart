@@ -4,9 +4,9 @@ import 'package:get/get.dart';
 import 'package:newtodoapp/controllers/auth_controller.dart';
 import 'package:newtodoapp/controllers/profile_controller.dart';
 import 'package:newtodoapp/controllers/todo_controller.dart';
-import 'package:newtodoapp/models/todo.dart';
+// import 'package:newtodoapp/models/todo.dart';
 import 'package:newtodoapp/screens/login_screen.dart';
-import 'package:newtodoapp/screens/todo_screen.dart';
+// import 'package:newtodoapp/screens/todo_screen.dart';
 
 void main() {
   Get.put(AuthController());
