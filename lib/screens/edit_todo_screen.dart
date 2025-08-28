@@ -5,8 +5,10 @@ import 'package:newtodoapp/controllers/todo_controller.dart';
 class EditTodoScreen extends StatelessWidget {
   EditTodoScreen({super.key});
   final TodoController todoController = Get.find();
+
   @override
   Widget build(BuildContext context) {
+    final int id = Get.arguments;
     final todo = todoController.editedTodo.value!;
     // make a controller with the starting text
     final TextEditingController textController = TextEditingController(

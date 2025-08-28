@@ -1,14 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:newtodoapp/app_router.dart';
 import 'package:newtodoapp/controllers/auth_controller.dart';
 import 'package:newtodoapp/controllers/todo_controller.dart';
 import 'package:newtodoapp/controllers/profile_controller.dart';
 import 'package:newtodoapp/models/todo.dart';
-
-import 'login_screen.dart';
-import 'edit_todo_screen.dart';
-import 'edit_profile_screen.dart';
-import 'change_password_screen.dart';
 
 class TodoScreen extends StatelessWidget {
   TodoScreen({super.key});
@@ -147,7 +143,8 @@ class TodoScreen extends StatelessWidget {
 
   void _editTodo(TodoController todoController, Todo todo) {
     todoController.editedTodo.value = todo;
-    Get.to(EditTodoScreen());
+    // Get.to(EditTodoScreen());
+    Get.toNamed(AppRouter.edittodoscreen, arguments: todo.id);
   }
 
   void _deleteTodo(TodoController todoController, Todo todo) {
@@ -156,7 +153,8 @@ class TodoScreen extends StatelessWidget {
 
   void logoutUser() {
     authController.logout();
-    Get.off(LoginScreen());
+    // Get.off(LoginScreen());
+    Get.offNamed(AppRouter.loginscreen);
   }
 
   // void openChangePasswordScreen() async {
@@ -170,7 +168,8 @@ class TodoScreen extends StatelessWidget {
   // }
 
   void openChangePasswordScreen() {
-    Get.to(() => const ChangePasswordScreen());
+    // Get.to(() => const ChangePasswordScreen());
+    Get.toNamed(AppRouter.changepasswordscreen);
   }
 
   void openEditProfileScreen() {
@@ -178,7 +177,8 @@ class TodoScreen extends StatelessWidget {
     //   context,
     //   MaterialPageRoute(builder: (context) => const EditProfileScreen()),
     // );
-    print("Opening EditProfileScreen...");
-    Get.to(() => EditProfileScreen());
+    // print("Opening EditProfileScreen...");
+    // Get.to(() => EditProfileScreen());
+    Get.toNamed(AppRouter.editprofilescreen);
   }
 }

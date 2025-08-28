@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:newtodoapp/app_router.dart';
 import 'package:newtodoapp/controllers/auth_controller.dart';
-import 'login_screen.dart';
 
 class SignupScreen extends StatelessWidget {
   SignupScreen({super.key});
@@ -111,6 +111,6 @@ class SignupScreen extends StatelessWidget {
     //   context,
     //   MaterialPageRoute(builder: (_) => LoginScreen()),
     // );
-    Get.off(LoginScreen());
+    Get.off(AppRouter.loginscreen);
   }
 }

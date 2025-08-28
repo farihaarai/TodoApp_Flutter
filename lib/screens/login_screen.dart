@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:newtodoapp/app_router.dart';
 import 'package:newtodoapp/controllers/auth_controller.dart';
-import 'signup_screen.dart';
-import 'todo_screen.dart';
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
@@ -51,7 +50,7 @@ class LoginScreen extends StatelessWidget {
 
             TextButton(
               onPressed: () {
-                Get.to(SignupScreen());
+                Get.toNamed(AppRouter.signupscreen);
                 // Navigator.push(
                 //   context,
                 //   MaterialPageRoute(builder: (_) => SignupScreen()),
@@ -74,7 +73,7 @@ class LoginScreen extends StatelessWidget {
       //   context,
       //   MaterialPageRoute(builder: (context) => const TodoScreen()),
       // );
-      Get.off(TodoScreen());
+      Get.offNamed(AppRouter.todoscreen);
     } else {
       error.value = "Wrong Password 123";
     }
