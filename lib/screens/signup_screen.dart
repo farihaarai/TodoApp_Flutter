@@ -4,7 +4,8 @@ import 'package:newtodoapp/controllers/auth_controller.dart';
 import 'login_screen.dart';
 
 class SignupScreen extends StatelessWidget {
-  const SignupScreen({super.key});
+  SignupScreen({super.key});
+  final AuthController authController = Get.find();
   @override
   Widget build(BuildContext context) {
     final RxString name = ''.obs;
@@ -27,18 +28,18 @@ class SignupScreen extends StatelessWidget {
             ),
 
             TextField(
-              onChanged: (val) => email.value,
+              onChanged: (val) => email.value = val,
               decoration: const InputDecoration(labelText: 'Email'),
             ),
 
             TextField(
-              onChanged: (val) => age.value,
+              onChanged: (val) => age.value = int.tryParse(val) ?? 0,
               keyboardType: TextInputType.number,
               decoration: const InputDecoration(labelText: 'Age'),
             ),
 
             TextField(
-              onChanged: (val) => password.value,
+              onChanged: (val) => password.value = val,
               obscureText: true,
               decoration: const InputDecoration(labelText: 'Password'),
             ),
@@ -90,8 +91,6 @@ class SignupScreen extends StatelessWidget {
     String selectedGender,
     Rx<String> error,
   ) {
-    final AuthController authController = Get.find();
-
     // Check if any field is empty or invalid.
     if (name.isEmpty || email.isEmpty || password.isEmpty || age == 0) {
       error.value = "Please fill all details";
