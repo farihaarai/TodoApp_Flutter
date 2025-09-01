@@ -16,11 +16,13 @@ class User {
   });
 
   factory User.fromJson(Map<String, dynamic> json) {
-    String email = (json['email']) as String;
-    String password = (json['password']) as String;
-    String name = (json['name']) as String;
-    int age = json['age'] as int;
-    String gender = (json['gender']) as String;
+    String email = json['email'] ?? '';
+    String password = json['password'] ?? '';
+    String name = json['name'] ?? '';
+    int age = json['age'] is int
+        ? json['age']
+        : int.tryParse(json['age']?.toString() ?? '0') ?? 0;
+    String gender = json['gender'] ?? '';
 
     return User(
       email: email,

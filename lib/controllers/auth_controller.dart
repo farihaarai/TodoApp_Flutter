@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:newtodoapp/controllers/base_api_controller.dart';
@@ -6,7 +7,7 @@ import '../models/user.dart';
 import 'profile_controller.dart';
 
 class AuthController extends BaseApiController {
-  final Rx<User?> user = Rx<User?>(null); // plain User
+  final Rx<User?> user = Rx<User?>(null);
   final RxString token = ''.obs; // JWT token
 
   ProfileController profileController = Get.put(ProfileController());
@@ -84,6 +85,37 @@ class AuthController extends BaseApiController {
   //   profileController.updateProfile(name: name, age: age, gender: gender);
   // }
   /// Signup (beginner-friendly way using JSON)
+  // Future<bool> signup({
+  //   required String name,
+  //   required String email,
+  //   required String gender,
+  //   required int age,
+  //   required String password,
+  // }) async {
+  //   final url = Uri.parse('$baseUrl/registerUser');
+
+  //   final response = await http.post(
+  //     url,
+  //     headers: {"Content-Type": "application/x-www-form-urlencoded"},
+  //     body: {
+  //       "name": name,
+  //       "email": email,
+  //       "gender": gender,
+  //       "age": age.toString(),
+  //       "password": password,
+  //     },
+  //   );
+
+  //   if (response.statusCode == 200) {
+  //     final data = jsonDecode(response.body);
+  //     token.value = data["jwtToken"];
+  //     print("Got JWT: ${token.value}");
+  //     return await fetchUserDetails();
+  //   } else {
+  //     print("Signup failed: ${response.statusCode}");
+  //     return false;
+  //   }
+  // }
   Future<bool> signup({
     required String name,
     required String email,
@@ -92,14 +124,6 @@ class AuthController extends BaseApiController {
     required String password,
   }) async {
     final url = Uri.parse('$baseUrl/registerUser');
-
-    // final request = http.MultipartRequest('POST', url);
-    // request.fields['name'] = name;
-    // request.fields['email'] = email;
-    // request.fields['gender'] = gender;
-    // request.fields['age'] = age.toString();
-    // request.fields['password'] = password;
-
     final request = http.MultipartRequest('POST', url)
       ..fields['name'] = name
       ..fields['email'] = email
@@ -107,14 +131,17 @@ class AuthController extends BaseApiController {
       ..fields['age'] = age.toString()
       ..fields['password'] = password;
 
-    final streamedResponse = await request.send();
-    final response = await http.Response.fromStream(streamedResponse);
+    final http.StreamedResponse sr = await request.send();
+    http.Response response = await http.Response.fromStream(sr);
 
     if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
+      print("Success");
+      String body = response.body;
+      final data = jsonDecode(body);
       token.value = data["jwtToken"];
       print("Got JWT: ${token.value}");
       return await fetchUserDetails();
+      // return false;
     } else {
       print("Signup failed: ${response.statusCode}");
       return false;
@@ -145,6 +172,11 @@ class AuthController extends BaseApiController {
     }
     profileController.updateProfile(name: name, age: age, gender: gender);
   }
+
+  // Future<bool> updateUserProfile(String name, int age, String gender) async {
+  //   final url = Uri.parse('$baseUrl/user');
+
+  // }
 
   /// Update Password
   void updateUserPassword(String newPassword) {

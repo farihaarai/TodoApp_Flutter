@@ -1,7 +1,8 @@
 import 'package:get/get.dart';
+import 'package:newtodoapp/controllers/base_api_controller.dart';
 import '../models/todo.dart';
 
-class TodoController extends GetxController {
+class TodoController extends BaseApiController {
   // This is a reactive list of todos.
   // Whenever items are added/removed/changed, the UI will update automatically.
   final RxList<Todo> todos = <Todo>[].obs;
@@ -21,6 +22,9 @@ class TodoController extends GetxController {
     todos.add(Todo(id: nextId, description: description));
     nextId++; // increase counter for next todo
   }
+  // Future<bool> addTodo(String description) async {
+  //   final url = Uri.parse('$baseUrl/')
+  // }
 
   // Method to edit an existing todo
   void editTodo(int id, String description) {
