@@ -90,7 +90,7 @@ class SignupScreen extends StatelessWidget {
     String password,
     String selectedGender,
     Rx<String> error,
-  ) {
+  ) async {
     // Check if any field is empty or invalid.
     if (name.isEmpty || email.isEmpty || password.isEmpty || age == 0) {
       error.value = "Please fill all details";
@@ -98,7 +98,7 @@ class SignupScreen extends StatelessWidget {
     }
 
     // Call signup function from AuthController to save user.
-    authController.signup(
+    bool success = await authController.signup(
       name: name,
       email: email,
       age: age,
@@ -111,6 +111,11 @@ class SignupScreen extends StatelessWidget {
     //   context,
     //   MaterialPageRoute(builder: (_) => LoginScreen()),
     // );
-    Get.off(AppRouter.loginscreen);
+    if (success) {
+      // only navigate if signup worked
+      Get.offNamed(AppRouter.todoscreen);
+    } else {
+      error.value = "Signup failed. Try again.";
+    }
   }
 }

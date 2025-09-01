@@ -1,99 +1,161 @@
+import 'dart:convert';
 import 'package:get/get.dart';
-import 'package:newtodoapp/controllers/profile_controller.dart';
+import 'package:http/http.dart' as http;
+import 'package:newtodoapp/controllers/base_api_controller.dart';
 import '../models/user.dart';
+import 'profile_controller.dart';
 
-class AuthController extends GetxController {
-  // This variable stores the currently logged-in user.
-  // It is reactive (Rx) so UI can update automatically when user changes.
-  final Rx<User?> user = Rx<User?>(null);
+class AuthController extends BaseApiController {
+  final Rx<User?> user = Rx<User?>(null); // plain User
+  final RxString token = ''.obs; // JWT token
 
-  User? savedUser = User(
-    email: "fariha@gmail.com",
-    password: "1234",
-    name: "Fariha".obs, // reactive name
-    age: 22.obs, // reactive age
-    gender: "f".obs, // reactive gender
-  );
-  final ProfileController profileController = Get.put(ProfileController());
-  // Method to log in a user by checking email & password
-  bool login(String email, String password) {
-    if (savedUser != null &&
-        savedUser!.email == email.trim() &&
-        savedUser!.password == password) {
-      // If email and password match, set current user as savedUser
-      user.value = savedUser;
-      profileController.updateProfile(
-        name: savedUser!.name!.value,
-        age: savedUser!.age!.value,
-        gender: savedUser!.gender!.value,
-      );
-      return true;
+  ProfileController profileController = Get.put(ProfileController());
+
+  /// Step 1: Login
+  Future<bool> login(String email, String password) async {
+    final url = Uri.parse('$baseUrl/login');
+
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({"email": email, "password": password}),
+    );
+
+    print("Login response: ${response.statusCode} ${response.body}");
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      token.value = data["jwtToken"];
+      print("Got JWT: ${token.value}");
+
+      return await fetchUserDetails();
     } else {
-      // If not matched, no user is logged in
-      user.value = null;
+      print("Login failed: ${response.statusCode}");
       return false;
     }
   }
 
-  // Method to sign up a new user
-  bool signup({
+  /// Step 2: Fetch user details with JWT
+  Future<bool> fetchUserDetails() async {
+    final url = Uri.parse('$baseUrl/user');
+
+    final response = await http.get(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ${token.value}',
+      },
+    );
+
+    print("User details response: ${response.statusCode} ${response.body}");
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      final fetchedUser = User.fromJson(data);
+
+      user.value = fetchedUser;
+      profileController.updateProfile(
+        name: fetchedUser.name,
+        age: fetchedUser.age,
+        gender: fetchedUser.gender,
+      );
+      return true;
+    }
+    return false;
+  }
+
+  /// Signup
+  // void signup({
+  //   required String name,
+  //   required String email,
+  //   required int age,
+  //   required String password,
+  //   required String gender,
+  // }) {
+  //   final newUser = User(
+  //     email: email,
+  //     password: password,
+  //     name: name,
+  //     age: age,
+  //     gender: gender,
+  //   );
+
+  //   user.value = newUser;
+  //   profileController.updateProfile(name: name, age: age, gender: gender);
+  // }
+  /// Signup (beginner-friendly way using JSON)
+  Future<bool> signup({
     required String name,
     required String email,
+    required String gender,
     required int age,
     required String password,
-    required String gender,
-  }) {
-    // Create a new user object with provided details
-    savedUser = User(
-      email: email,
-      password: password,
-      name: name.obs,
-      age: age.obs,
-      gender: gender.obs,
-    );
-    // Set current user as this new user
-    user.value = savedUser;
-    profileController.updateProfile(name: name, age: age, gender: gender);
-    return true;
+  }) async {
+    final url = Uri.parse('$baseUrl/registerUser');
+
+    // final request = http.MultipartRequest('POST', url);
+    // request.fields['name'] = name;
+    // request.fields['email'] = email;
+    // request.fields['gender'] = gender;
+    // request.fields['age'] = age.toString();
+    // request.fields['password'] = password;
+
+    final request = http.MultipartRequest('POST', url)
+      ..fields['name'] = name
+      ..fields['email'] = email
+      ..fields['gender'] = gender
+      ..fields['age'] = age.toString()
+      ..fields['password'] = password;
+
+    final streamedResponse = await request.send();
+    final response = await http.Response.fromStream(streamedResponse);
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      token.value = data["jwtToken"];
+      print("Got JWT: ${token.value}");
+      return await fetchUserDetails();
+    } else {
+      print("Signup failed: ${response.statusCode}");
+      return false;
+    }
   }
 
-  // Method to log out user
+  /// Logout
   void logout() {
     user.value = null;
-    profileController.updateProfile(name: "", age: 0, gender: "f");
+    token.value = '';
+    profileController.clearProfile();
   }
 
-  // Method to update user profile details (name, age, gender)
+  /// Update Profile
   void updateUserProfile({
     required String name,
     required int age,
     required String gender,
   }) {
     if (user.value != null) {
-      // Update the currently logged-in user's values
-      user.value!.name?.value = name;
-      user.value!.age?.value = age;
-      user.value!.gender?.value = gender;
+      user.value = User(
+        email: user.value!.email,
+        password: user.value!.password,
+        name: name,
+        age: age,
+        gender: gender,
+      );
     }
-    if (savedUser != null) {
-      // Also update the saved "database" user
-      savedUser!.name?.value = name;
-      savedUser!.age?.value = age;
-      savedUser!.gender?.value = gender;
-    }
-
     profileController.updateProfile(name: name, age: age, gender: gender);
   }
 
-  // Method to update user password
+  /// Update Password
   void updateUserPassword(String newPassword) {
     if (user.value != null) {
-      // Update current user's password
-      user.value!.password = newPassword;
-    }
-    if (savedUser != null) {
-      // Also update saved "database" user's password
-      savedUser!.password = newPassword;
+      user.value = User(
+        email: user.value!.email,
+        password: newPassword,
+        name: user.value!.name,
+        age: user.value!.age,
+        gender: user.value!.gender,
+      );
     }
   }
 }

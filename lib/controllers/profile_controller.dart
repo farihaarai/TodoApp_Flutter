@@ -1,9 +1,9 @@
 import 'package:get/get.dart';
 
 class ProfileController extends GetxController {
-  RxString name = "".obs;
-  RxInt age = 0.obs;
-  RxString gender = "f".obs;
+  final RxString name = "".obs;
+  final RxInt age = 0.obs;
+  final RxString gender = "f".obs;
 
   void updateProfile({
     required String name,
@@ -13,5 +13,11 @@ class ProfileController extends GetxController {
     this.name.value = name;
     this.age.value = age;
     this.gender.value = gender;
+  }
+
+  void clearProfile() {
+    name.value = "";
+    age.value = 0;
+    gender.value = "f";
   }
 }

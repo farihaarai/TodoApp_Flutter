@@ -1,28 +1,33 @@
-import 'package:get/get.dart';
+// import 'package:get/get.dart';
 
 class User {
-  String email;
-  String password;
-
-  RxString? name;
-  RxInt? age;
-  RxString? gender;
+  final String email;
+  final String password;
+  final String name;
+  final int age;
+  final String gender;
 
   User({
     required this.email,
     required this.password,
-    this.name,
-    this.age,
-    this.gender,
+    required this.name,
+    required this.age,
+    required this.gender,
   });
 
-  User copyWith({String? name, int? age, String? gender}) {
+  factory User.fromJson(Map<String, dynamic> json) {
+    String email = (json['email']) as String;
+    String password = (json['password']) as String;
+    String name = (json['name']) as String;
+    int age = json['age'] as int;
+    String gender = (json['gender']) as String;
+
     return User(
       email: email,
       password: password,
-      name: name != null ? name.obs : this.name,
-      age: age != null ? age.obs : this.age,
-      gender: gender != null ? gender.obs : this.gender,
+      name: name,
+      age: age,
+      gender: gender,
     );
   }
 }

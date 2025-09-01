@@ -64,9 +64,9 @@ class LoginScreen extends StatelessWidget {
     );
   }
 
-  void handleLogin(Rx<String> error, String email, String password) {
+  void handleLogin(Rx<String> error, String email, String password) async {
     final AuthController authController = Get.find();
-    bool success = authController.login(email, password);
+    bool success = await authController.login(email, password);
 
     if (success) {
       // Navigator.pushReplacement(
