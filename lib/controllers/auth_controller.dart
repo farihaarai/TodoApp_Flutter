@@ -116,6 +116,37 @@ class AuthController extends BaseApiController {
   //     return false;
   //   }
   // }
+  // Future<bool> signup({
+  //   required String name,
+  //   required String email,
+  //   required String gender,
+  //   required int age,
+  //   required String password,
+  // }) async {
+  //   final url = Uri.parse('$baseUrl/registerUser');
+  //   final request = http.MultipartRequest('POST', url)
+  //     ..fields['name'] = name
+  //     ..fields['email'] = email
+  //     ..fields['gender'] = gender
+  //     ..fields['age'] = age.toString()
+  //     ..fields['password'] = password;
+
+  //   final http.StreamedResponse sr = await request.send();
+  //   http.Response response = await http.Response.fromStream(sr);
+
+  //   if (response.statusCode == 200) {
+  //     print("Success");
+  //     String body = response.body;
+  //     final data = jsonDecode(body);
+  //     token.value = data["jwtToken"];
+  //     print("Got JWT: ${token.value}");
+  //     return await fetchUserDetails();
+  //     // return false;
+  //   } else {
+  //     print("Signup failed: ${response.statusCode}");
+  //     return false;
+  //   }
+  // }
   Future<bool> signup({
     required String name,
     required String email,
@@ -123,25 +154,21 @@ class AuthController extends BaseApiController {
     required int age,
     required String password,
   }) async {
-    final url = Uri.parse('$baseUrl/registerUser');
-    final request = http.MultipartRequest('POST', url)
-      ..fields['name'] = name
-      ..fields['email'] = email
-      ..fields['gender'] = gender
-      ..fields['age'] = age.toString()
-      ..fields['password'] = password;
-
-    final http.StreamedResponse sr = await request.send();
-    http.Response response = await http.Response.fromStream(sr);
-
+    final url = Uri.parse('$baseUrl/registerUserGet').replace(
+      queryParameters: {
+        'name': name,
+        'email': email,
+        'gender': gender,
+        'age': age.toString(),
+        'password': password,
+      },
+    );
+    final response = await http.get(url);
     if (response.statusCode == 200) {
-      print("Success");
-      String body = response.body;
-      final data = jsonDecode(body);
+      final data = jsonDecode(response.body);
       token.value = data["jwtToken"];
       print("Got JWT: ${token.value}");
       return await fetchUserDetails();
-      // return false;
     } else {
       print("Signup failed: ${response.statusCode}");
       return false;
