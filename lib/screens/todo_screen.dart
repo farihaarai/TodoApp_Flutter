@@ -9,8 +9,14 @@ import 'package:newtodoapp/models/todo.dart';
 class TodoScreen extends StatelessWidget {
   TodoScreen({super.key});
   final AuthController authController = Get.find();
-  final TodoController todoController = Get.find();
+  final TodoController todoController = Get.put(TodoController());
   final ProfileController profileController = Get.find();
+
+  // void onInit() {
+  //   todoController
+  //       .fetchUserTodo(); // 👈 fetch todos as soon as controller starts
+  // }
+
   @override
   Widget build(BuildContext context) {
     final TextEditingController textController = TextEditingController();

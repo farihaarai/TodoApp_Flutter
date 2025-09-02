@@ -10,7 +10,7 @@ import 'package:newtodoapp/controllers/todo_controller.dart';
 
 void main() {
   Get.put(AuthController());
-  Get.put(TodoController());
+  // Get.put(TodoController());
   Get.put(ProfileController());
   runApp(const MyApp());
 }

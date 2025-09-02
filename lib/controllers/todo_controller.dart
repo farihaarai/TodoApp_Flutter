@@ -1,4 +1,8 @@
+import 'dart:convert';
+
 import 'package:get/get.dart';
+import 'package:http/http.dart' as http;
+import 'package:newtodoapp/controllers/auth_controller.dart';
 import 'package:newtodoapp/controllers/base_api_controller.dart';
 import '../models/todo.dart';
 
@@ -6,7 +10,13 @@ class TodoController extends BaseApiController {
   // This is a reactive list of todos.
   // Whenever items are added/removed/changed, the UI will update automatically.
   final RxList<Todo> todos = <Todo>[].obs;
+  AuthController authController = Get.put(AuthController());
 
+  @override
+  void onInit() {
+    super.onInit();
+    fetchUserTodo(); // 👈 load todos right after controller is created
+  }
   // Method to add a new todo by making id as current datetime
   // void addTodo(String description) {
   //   todos.add(
@@ -17,6 +27,26 @@ class TodoController extends BaseApiController {
   // Method to add a new todo by making id icremented using counter
   int nextId = 1; // counter starts at 1
   final Rx<Todo?> editedTodo = Rx<Todo?>(null);
+
+  Future<bool> fetchUserTodo() async {
+    final url = Uri.parse('$baseUrl/user/toDo');
+
+    final response = await http.get(
+      url,
+      headers: {'Authorization': 'Bearer ${authController.token.value}'},
+    );
+    print("Todos response: ${response.statusCode} ${response.body}");
+
+    if (response.statusCode == 200) {
+      final List<dynamic> data = jsonDecode(response.body);
+      for (var item in data) {
+        item["isCompleted"] = item["isCompleted"] ?? false;
+        todos.add(Todo.fromJson(item));
+      }
+      return true;
+    }
+    return false;
+  }
 
   void addTodo(String description) {
     todos.add(Todo(id: nextId, description: description));
