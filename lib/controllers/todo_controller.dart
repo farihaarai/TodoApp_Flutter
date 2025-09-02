@@ -107,8 +107,26 @@ class TodoController extends BaseApiController {
   }
 
   // Method to delete a todo (by index)
-  void deleteTodo(int id) {
-    todos.removeWhere((todo) => todo.id == id);
+  // void deleteTodo(int id) {
+  //   todos.removeWhere((todo) => todo.id == id);
+  // }
+  Future<bool> deleteTodo(int id) async {
+    final url = Uri.parse('$baseUrl/user/toDo/$id');
+
+    final response = await http.delete(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ${authController.token.value}',
+      },
+      body: jsonEncode({"id": id}),
+    );
+    if (response.statusCode == 200) {
+      todos.removeWhere((todo) => todo.id == id);
+      return true;
+    } else {
+      return false;
+    }
   }
 
   // Method to mark todo as completed or not
