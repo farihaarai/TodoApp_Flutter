@@ -79,10 +79,31 @@ class TodoController extends BaseApiController {
   }
 
   // Method to edit an existing todo
-  void editTodo(int id, String description) {
-    // Update the reactive description value at that index
-    Todo? todo = todos.firstWhereOrNull((todo) => todo.id == id);
-    todo?.description.value = description;
+  // void editTodo(int id, String description) {
+  //   // Update the reactive description value at that index
+  //   Todo? todo = todos.firstWhereOrNull((todo) => todo.id == id);
+  //   todo?.description.value = description;
+  // }
+  Future<bool> editTodo(int id, String description) async {
+    final url = Uri.parse('$baseUrl/user/toDo/$id');
+    final response = await http.put(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ${authController.token.value}',
+      },
+      body: jsonEncode({"description": description}),
+    );
+
+    print("edit todo response: ${response.statusCode} ${response.body}");
+    if (response.statusCode == 200) {
+      Todo? todo = todos.firstWhereOrNull((todo) => todo.id == id);
+      todo?.description.value = description;
+      return true;
+    } else {
+      print("Failed to edit todo: ${response.statusCode}");
+      return false;
+    }
   }
 
   // Method to delete a todo (by index)
