@@ -4,7 +4,7 @@ import 'package:newtodoapp/app_router.dart';
 
 import 'package:newtodoapp/controllers/auth_controller.dart';
 import 'package:newtodoapp/controllers/profile_controller.dart';
-import 'package:newtodoapp/controllers/todo_controller.dart';
+// import 'package:newtodoapp/controllers/todo_controller.dart';
 // import 'package:newtodoapp/models/todo.dart';
 // import 'package:newtodoapp/screens/todo_screen.dart';
 

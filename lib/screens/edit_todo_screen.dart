@@ -8,7 +8,7 @@ class EditTodoScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final int id = Get.arguments;
+    // final int id = Get.arguments;
     final todo = todoController.editedTodo.value!;
     // make a controller with the starting text
     final TextEditingController textController = TextEditingController(

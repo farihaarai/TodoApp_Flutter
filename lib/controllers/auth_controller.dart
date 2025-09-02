@@ -283,15 +283,4 @@ class AuthController extends BaseApiController {
   //     return false;
   //   }
   // }
-  /// Update Password
-  // void updateUserPassword(String newPassword) {
-  //   if (user.value != null) {
-  //     user.value = User(
-  //       email: user.value!.email,
-  //       password: newPassword,
-  //       name: user.value!.name,
-  //       age: user.value!.age,
-  //       gender: user.value!.gender,
-  //     );
-  //   }
-  // }
+  
