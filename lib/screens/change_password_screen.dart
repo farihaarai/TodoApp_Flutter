@@ -13,20 +13,19 @@ class ChangePasswordScreen extends StatelessWidget {
     final RxString message = ''.obs;
 
     void handleChangePassword() {
-      if (oldPass.value != authController.user.value?.password) {
-        message.value = "Old password is incorrect ";
-        return;
-      }
       if (newPass.value != confirmPass.value) {
         message.value = "New passwords do not match ";
         return;
       }
-      if (newPass.value.isEmpty) {
+      if (oldPass.value.isEmpty || newPass.value.isEmpty) {
         message.value = "Password cannot be empty ";
         return;
       }
 
-      authController.updateUserPassword(newPass.value);
+      authController.updateUserPassword(
+        currentPassword: oldPass.value,
+        newPassword: newPass.value,
+      );
 
       message.value = "Password changed successfully";
 
