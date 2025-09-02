@@ -15,7 +15,7 @@ class TodoController extends BaseApiController {
   @override
   void onInit() {
     super.onInit();
-    fetchUserTodo(); // 👈 load todos right after controller is created
+    fetchUserTodo(); // load todos right after controller is created
   }
   // Method to add a new todo by making id as current datetime
   // void addTodo(String description) {
