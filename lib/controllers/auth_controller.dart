@@ -55,11 +55,11 @@ class AuthController extends BaseApiController {
       final fetchedUser = User.fromJson(data);
 
       user.value = fetchedUser;
-      profileController.updateProfile(
-        name: fetchedUser.name,
-        age: fetchedUser.age,
-        gender: fetchedUser.gender,
-      );
+
+      // sync to profile controller for UI
+      profileController.name.value = fetchedUser.name;
+      profileController.age.value = fetchedUser.age;
+      profileController.gender.value = fetchedUser.gender;
       return true;
     }
     return false;
@@ -183,27 +183,71 @@ class AuthController extends BaseApiController {
   }
 
   /// Update Profile
-  void updateUserProfile({
+  // void updateUserProfile({
+  //   required String name,
+  //   required int age,
+  //   required String gender,
+  // }) {
+  //   if (user.value != null) {
+  //     user.value = User(
+  //       email: user.value!.email,
+  //       password: user.value!.password,
+  //       name: name,
+  //       age: age,
+  //       gender: gender,
+  //     );
+  //   }
+  //   profileController.updateProfile(name: name, age: age, gender: gender);
+  // }
+
+  Future<bool> updateUserProfile({
     required String name,
     required int age,
     required String gender,
-  }) {
-    if (user.value != null) {
-      user.value = User(
-        email: user.value!.email,
-        password: user.value!.password,
-        name: name,
-        age: age,
-        gender: gender,
+  }) async {
+    final url = Uri.parse('$baseUrl/user');
+
+    try {
+      final response = await http.put(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ${token.value}',
+        },
+        body: jsonEncode({"name": name, "age": age, "gender": gender}),
       );
+
+      print("Update profile response: ${response.statusCode} ${response.body}");
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+
+        // update user in AuthController
+        if (user.value != null) {
+          user.value = User(
+            email: user.value!.email,
+            password: user.value!.password,
+            name: name,
+            age: age,
+            gender: gender,
+          );
+        }
+
+        // sync values to ProfileController for UI
+        profileController.name.value = name;
+        profileController.age.value = age;
+        profileController.gender.value = gender;
+
+        return true;
+      } else {
+        print("Failed to update user: ${response.statusCode}");
+        return false;
+      }
+    } catch (e) {
+      print("Error updating profile: $e");
+      return false;
     }
-    profileController.updateProfile(name: name, age: age, gender: gender);
   }
-
-  // Future<bool> updateUserProfile(String name, int age, String gender) async {
-  //   final url = Uri.parse('$baseUrl/user');
-
-  // }
 
   /// Update Password
   void updateUserPassword(String newPassword) {

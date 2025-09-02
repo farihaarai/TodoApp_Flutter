@@ -1,19 +1,10 @@
 import 'package:get/get.dart';
+import 'package:newtodoapp/controllers/base_api_controller.dart';
 
-class ProfileController extends GetxController {
+class ProfileController extends BaseApiController {
   final RxString name = "".obs;
   final RxInt age = 0.obs;
   final RxString gender = "f".obs;
-
-  void updateProfile({
-    required String name,
-    required int age,
-    required String gender,
-  }) {
-    this.name.value = name;
-    this.age.value = age;
-    this.gender.value = gender;
-  }
 
   void clearProfile() {
     name.value = "";
