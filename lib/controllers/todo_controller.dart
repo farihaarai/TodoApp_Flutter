@@ -48,13 +48,35 @@ class TodoController extends BaseApiController {
     return false;
   }
 
-  void addTodo(String description) {
-    todos.add(Todo(id: nextId, description: description));
-    nextId++; // increase counter for next todo
-  }
-  // Future<bool> addTodo(String description) async {
-  //   final url = Uri.parse('$baseUrl/')
+  // void addTodo(String description) {
+  //   todos.add(Todo(id: nextId, description: description));
+  //   nextId++; // increase counter for next todo
   // }
+  Future<bool> addTodo(String description) async {
+    final url = Uri.parse('$baseUrl/user/toDo');
+
+    final response = await http.post(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ${authController.token.value}',
+      },
+      body: jsonEncode({"description": description}),
+    );
+    print("Add Todo response: ${response.statusCode} ${response.body}");
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      final data = jsonDecode(response.body);
+
+      // Update the list in UI
+      todos.add(Todo.fromJson(data));
+
+      return true;
+    } else {
+      print("Todo not added: ${response.statusCode}");
+      return false;
+    }
+  }
 
   // Method to edit an existing todo
   void editTodo(int id, String description) {
